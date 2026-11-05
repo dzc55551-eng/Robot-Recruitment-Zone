@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-05",
+  "first_check_at": "2026-11-05T15:48:07+08:00",
+  "last_check_at": "2026-11-05T15:48:07+08:00",
+  "checks_today": 1,
+  "positions_open": 6,
+  "positions_archived": 0,
+  "titles": [
+    "定位算法工程师",
+    "感知算法工程师",
+    "硬件工程师",
+    "结构工程师",
+    "规划算法工程师",
+    "视觉深度学习算法工程师"
+  ],
+  "generator": "snapshot",
+  "upstream": {
+    "stars": 1,
+    "forks": 0,
+    "open_issues": 0
+  }
+}
