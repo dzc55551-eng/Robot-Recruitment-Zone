@@ -136,11 +136,15 @@ def ensure_repo(cfg, token, force_clean=False, dry_run=False):
 
 def run_generators(cfg, repo_path, token, now):
     sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from generators import snapshot, sync_index  # noqa: E402
+    from generators import docs_index, heartbeat  # noqa: E402
 
-    registry = {"snapshot": snapshot, "sync_index": sync_index}
+    registry = {"heartbeat": heartbeat, "docs_index": docs_index}
+    # 兼容早期配置里的旧名称
+    registry["snapshot"] = heartbeat
+    registry["sync_index"] = docs_index
+
     results = []
-    for name in cfg.get("generators", ["snapshot"]):
+    for name in cfg.get("generators", ["heartbeat"]):
         mod = registry.get(name)
         if mod is None:
             log("未知生成器 %s，跳过" % name)
@@ -198,11 +202,13 @@ def publish(repo_path, cfg, token, now, results):
         return {"pushed": False, "reason": "no-token",
                 "hint": "设置 GH_TOKEN 或写入 " + str(TOKEN_FILE)}
 
+    # commit 主题：前缀可在配置里改。写成带 {} 的形式时会填入变更来源
     names = [r.get("name") for r in results if r.get("changed")]
-    scope = "index" if "sync_index" in names and "snapshot" not in names else "status"
-    subject = "%s: %s" % (cfg.get("commit_prefix", "chore(%s)" % scope), now.strftime("%Y-%m-%d %H:%M"))
-    if "sync_index" in names:
-        subject += "（同步索引）"
+    prefix = cfg.get("commit_prefix") or "chore: update"
+    if "{}" in prefix:
+        scope = "docs" if names == ["docs_index"] else "status"
+        prefix = prefix.format(scope)
+    subject = "%s: %s" % (prefix, now.strftime("%Y-%m-%d %H:%M"))
 
     git(repo_path, "add", "-A")
     git(repo_path, "commit", "-m", subject, "-m", COMMIT_TAIL)
