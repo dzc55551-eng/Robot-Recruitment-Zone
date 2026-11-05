@@ -56,7 +56,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TZ: Asia/Shanghai
         run: |
-          python .github/keeper/keeper.py --repo Robot-Recruitment-Zone --local-path .
+          python .github/keeper/keeper.py \
+            --config .github/keeper/config.json \
+            --repo Robot-Recruitment-Zone \
+            --local-path .
 
       - name: 当天已有记录
         if: steps.gate.outputs.skip == 'true'
