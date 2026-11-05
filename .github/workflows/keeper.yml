@@ -47,8 +47,8 @@ jobs:
       - name: 配置 git 身份
         if: steps.gate.outputs.skip != 'true'
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "dzc55551-eng"
+          git config user.email "dzc55551@gmail.com"
 
       - name: 执行更新
         if: steps.gate.outputs.skip != 'true'
