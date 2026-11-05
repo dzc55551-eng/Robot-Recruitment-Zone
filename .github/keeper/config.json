@@ -1,0 +1,16 @@
+{
+  "repos": [
+    {
+      "owner": "dzc55551-eng",
+      "repo": "Robot-Recruitment-Zone",
+      "branch": "main",
+      "local_path": ".",
+      "generators": ["sync_index", "snapshot"],
+      "active_hours": [0, 24],
+      "snapshot_path": "positions/status.json",
+      "max_files": 3,
+      "max_lines": 60,
+      "commit_prefix": "chore(status)"
+    }
+  ]
+}

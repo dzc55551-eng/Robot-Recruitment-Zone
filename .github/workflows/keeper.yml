@@ -1,0 +1,63 @@
+name: repo-keeper
+
+on:
+  schedule:
+    # UTC 时间，对应北京时间 09:00 / 15:00 / 21:00
+    - cron: '0 1,7,13 * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: '忽略「当天已更新」判断，强制执行一次'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repo-keeper
+  cancel-in-progress: false
+
+jobs:
+  keep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 判断当天是否已更新
+        id: gate
+        env:
+          FORCE: ${{ inputs.force }}
+        run: |
+          TODAY=$(TZ=Asia/Shanghai date +%F)
+          FILE=$(python -c "import json;print(json.load(open('positions/status.json',encoding='utf-8'))['date'])" 2>/dev/null || echo "")
+          echo "今天 $TODAY，status.json 记录 $FILE，force=${FORCE:-false}"
+          if [ "$FILE" = "$TODAY" ] && [ "${FORCE:-false}" != "true" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 配置 git 身份
+        if: steps.gate.outputs.skip != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: 执行更新
+        if: steps.gate.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TZ: Asia/Shanghai
+        run: |
+          python .github/keeper/keeper.py --repo Robot-Recruitment-Zone --local-path .
+
+      - name: 当天已有记录
+        if: steps.gate.outputs.skip == 'true'
+        run: echo "status.json 已是今天的记录，本次跳过，避免与本机重复提交"
