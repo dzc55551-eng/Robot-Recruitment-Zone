@@ -1,8 +1,8 @@
 {
   "date": "2026-11-05",
   "first_check_at": "2026-11-05T15:48:07+08:00",
-  "last_check_at": "2026-11-05T16:15:23+08:00",
-  "checks_today": 5,
+  "last_check_at": "2026-11-05T17:28:05+08:00",
+  "checks_today": 6,
   "positions_open": 6,
   "positions_archived": 0,
   "titles": [
@@ -13,7 +13,7 @@
     "规划算法工程师",
     "视觉深度学习算法工程师"
   ],
-  "generator": "snapshot",
+  "generator": "heartbeat",
   "upstream": {
     "stars": 1,
     "forks": 0,
